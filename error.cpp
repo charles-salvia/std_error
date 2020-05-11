@@ -6,6 +6,8 @@
 #include <optional>
 #endif
 
+#include <functional>
+
 namespace stdx {
 
 namespace {

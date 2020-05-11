@@ -2809,6 +2809,8 @@ struct is_error_code_enum<stdx::dynamic_exception_errc> : std::true_type
 #include <optional>
 #endif
 
+#include <functional>
+
 namespace stdx {
 
 namespace {
