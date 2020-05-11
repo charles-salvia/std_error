@@ -33,7 +33,7 @@
 #endif
 
 #if defined(STDX_GCC_COMPILER)
-	#if (__GNUC == 7) && ((__GNUC_MINOR >= 1) && (__GNUC_MINOR <= 3))
+	#if (__GNUC__ == 7) && ((__GNUC_MINOR__ >= 1) && (__GNUC_MINOR__ <= 3))
 		#define STDX_GCC7_WORKAROUND_CONSTEXPR
 	#else
 		#define STDX_GCC7_WORKAROUND_CONSTEXPR constexpr
