@@ -1051,11 +1051,6 @@ struct error_traits<std::error_code>
 		return std::make_exception_ptr(std::system_error{ec});
 	}
 
-	static std::error_code out_of_memory_error() noexcept
-	{
-		return std::make_error_code(std::errc::not_enough_memory);
-	}
-
 	static error to_error(std::error_code ec) noexcept;
 };
 
@@ -1186,11 +1181,6 @@ struct error_traits<std::exception_ptr>
 	static std::exception_ptr to_exception(std::exception_ptr e) noexcept
 	{
 		return e;
-	}
-
-	static std::exception_ptr out_of_memory_error() noexcept
-	{
-		return std::make_exception_ptr(std::bad_alloc{});
 	}
 
 	static error to_error(std::exception_ptr e) noexcept
