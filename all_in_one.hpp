@@ -1568,7 +1568,7 @@ class shared_string_ref : public string_ref
 #ifndef STDX_LAUNDER_HPP
 #define STDX_LAUNDER_HPP
 
-#include <memory>
+#include <new>
 
 namespace stdx {
 
