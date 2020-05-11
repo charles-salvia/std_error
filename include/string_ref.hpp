@@ -213,7 +213,7 @@ inline bool operator != (const string_ref& lhs, const string_ref& rhs) noexcept
 
 inline bool operator < (const string_ref& lhs, const string_ref& rhs) noexcept
 {
-	std::size_t sz = std::min<std::size_t>(lhs.size(), rhs.size());
+	const std::size_t sz = (lhs.size() < rhs.size()) ? lhs.size() : rhs.size();
 	int result = std::memcmp(lhs.data(), rhs.data(), sz);
 	if (result == 0) return lhs.size() < rhs.size();
 	return result < 0;
