@@ -5,4 +5,4 @@ This is an implementation of `std::error`, the proposed error type (p0709r4) to 
 
 See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0709r4.pdf
 
-Requires at least C++14.  Tested on GCC-4.92 to GCC 10, Clang 4 to Clang 10, and MSVC 19.14 to 19.24
+Requires at least C++14.  Tested on GCC-4.9.2 to GCC 10, Clang 4 to Clang 10, and MSVC 19.14 to 19.24
