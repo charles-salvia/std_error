@@ -51,5 +51,11 @@
 	#define STDX_LEGACY_CONSTEXPR constexpr
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1910)
+	#define STDX_MSVC_EMPTY_BASE_CLASSES __declspec(empty_bases)
+#else
+	#define STDX_MSVC_EMPTY_BASE_CLASSES
+#endif
+
 #endif // STDX_COMPILER_HPP
 

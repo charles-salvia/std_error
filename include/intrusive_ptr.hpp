@@ -216,7 +216,7 @@ class intrusive_ptr_base
 		m_impl.swap(other.m_impl);
 	}
 
-	struct impl
+	struct STDX_MSVC_EMPTY_BASE_CLASSES impl
 		:
 		PointerImplementation,
 		RefCountAccessor, 
