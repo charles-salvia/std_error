@@ -2677,7 +2677,7 @@ namespace detail {
 	{
 		struct control_block : enable_reference_count
 		{
-			constexpr explicit control_block(Ptr p) noexcept : ptr_(std::move(p))
+			explicit control_block(Ptr p) noexcept : ptr_(std::move(p))
 			{ }
 
 			Ptr ptr_;
