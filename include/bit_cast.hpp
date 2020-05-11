@@ -2,6 +2,8 @@
 #define STDX_BIT_CAST_HPP
 
 #include <cstdint>
+#include <cstring>
+
 #include "compiler.hpp"
 #include "type_traits.hpp"
 

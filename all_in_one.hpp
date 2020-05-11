@@ -186,6 +186,8 @@ inline constexpr bool is_trivially_relocatable_v = is_trivially_relocatable<T>::
 #define STDX_BIT_CAST_HPP
 
 #include <cstdint>
+#include <cstring>
+
 
 namespace stdx {
 
