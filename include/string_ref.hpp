@@ -88,11 +88,11 @@ class string_ref
 		: m_begin(beg), m_end(e), m_resource_management(rm), context{ctx}
 	{ }
 
-	constexpr string_ref(const string_ref& s)
+	STDX_GCC7_WORKAROUND_CONSTEXPR string_ref(const string_ref& s)
 		: string_ref{s.m_resource_management.copy ? s.m_resource_management.copy(s) : s.state()}
 	{ }
 
-	constexpr string_ref(string_ref&& s)
+	STDX_GCC7_WORKAROUND_CONSTEXPR string_ref(string_ref&& s)
 		: 
 		string_ref{
 			s.m_resource_management.move ? 

@@ -32,6 +32,16 @@
 
 #endif
 
+#if defined(STDX_GCC_COMPILER)
+	#if (__GNUC == 7) && ((__GNUC_MINOR >= 1) && (__GNUC_MINOR <= 3))
+		#define STDX_GCC7_WORKAROUND_CONSTEXPR
+	#else
+		#define STDX_GCC7_WORKAROUND_CONSTEXPR constexpr
+	#endif
+#else
+	#define STDX_GCC7_WORKAROUND_CONSTEXPR constexpr
+#endif
+
 // Add a legacy constexpr macro for cases where GCC < 5 incorrectly applies the const
 // qualifier to constexpr member functions or does not support relaxed constexpr functions
 //
