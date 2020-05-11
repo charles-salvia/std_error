@@ -977,7 +977,7 @@ struct default_error_resource_management_t : error_resource_management
 
 #if defined(STDX_VARIABLE_TEMPLATES)
 template <class T>
-inline constexpr default_error_resource_management = default_error_resource_management_t<T>{};
+inline constexpr default_error_resource_management_t<T> default_error_resource_management {};
 #endif
 
 template <>
