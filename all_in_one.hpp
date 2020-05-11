@@ -51,6 +51,12 @@
 	#define STDX_LEGACY_CONSTEXPR constexpr
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1910)
+	#define STDX_MSVC_EMPTY_BASE_CLASSES __declspec(empty_bases)
+#else
+	#define STDX_MSVC_EMPTY_BASE_CLASSES
+#endif
+
 #endif // STDX_COMPILER_HPP
 
 
@@ -567,7 +573,7 @@ class intrusive_ptr_base
 		m_impl.swap(other.m_impl);
 	}
 
-	struct impl
+	struct STDX_MSVC_EMPTY_BASE_CLASSES impl
 		:
 		PointerImplementation,
 		RefCountAccessor, 
