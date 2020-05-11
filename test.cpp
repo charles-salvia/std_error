@@ -6,8 +6,9 @@
 #include <cstdint>
 #include <string>
 
-#include "error.hpp"
-#include "error.cpp"
+//#include "include/error.hpp"
+//#include "error.cpp"
+#include "all_in_one.hpp"
 
 #ifdef NDEBUG
 #error "Cannot compile test with NDEBUG"
