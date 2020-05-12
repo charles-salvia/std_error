@@ -370,7 +370,7 @@ namespace {
 			case std::errc::wrong_protocol_type:
 				return "Protocol wrong type for socket";
 			default:
-				return "unknown";
+				return "Unspecified error";
 		}
 	}
 
