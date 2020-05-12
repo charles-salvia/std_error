@@ -1,8 +1,6 @@
 # std_error
 Implementation of `std::error` as proposed by Herb Sutter in [Zero-Overhead Deterministic Exceptions](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0709r0.pdf)
 
-This is an implementation of `std::error`, the proposed error type (p0709r4) to implement deterministic exceptions.  (See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0709r4.pdf)
-
 Requires at least C++14.  Tested on GCC-4.9.2 to GCC 10, Clang 4 to Clang 10, and MSVC 19.14 to 19.24
 
 All-in-one header-only link: https://github.com/charles-salvia/std_error/blob/master/all_in_one.hpp <br>
