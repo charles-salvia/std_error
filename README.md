@@ -1,5 +1,5 @@
 # std_error
-std::error implementation (zero-overhead deterministic exceptions) P0709
+Implementation of `std::error` implementation as proposed by Herb Sutter in [Zero-Overhead Deterministic Exceptions](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0709r0.pdf)
 
 This is an implementation of `std::error`, the proposed error type (p0709r4) to implement deterministic exceptions.  (See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0709r4.pdf)
 
