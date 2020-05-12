@@ -1701,17 +1701,7 @@ enum class dynamic_exception_errc
 	unspecified_exception
 };
 
-const std::error_category& dynamic_exception_category() noexcept;
-
-inline std::error_code make_error_code(dynamic_exception_errc code) noexcept
-{
-	return std::error_code(static_cast<int>(code), dynamic_exception_category());
-}
-
-std::error_code error_code_from_exception(
-	std::exception_ptr eptr = std::current_exception(),
-	std::error_code not_matched = make_error_code(dynamic_exception_errc::unspecified_exception)
-) noexcept;
+std::error_code error_code_from_exception(std::exception_ptr eptr) noexcept;
 
 // -------------------- error_traits
 //
@@ -2834,89 +2824,90 @@ namespace stdx {
 
 namespace {
 
-	inline const char* dynamic_exception_errc_str(unsigned ev) noexcept
+inline const char* dynamic_exception_errc_str(unsigned ev) noexcept
+{
+	constexpr const char* msg[] = 
 	{
-		constexpr const char* msg[] = 
-		{
-			"Success",
-			"std::runtime_error",
-			"std::domain_error",
-			"std::invalid_argument",
-			"std::length_error",
-			"std::out_of_range",
-			"std::logic_error",
-			"std::range_error",
-			"std::overflow_error",
-			"std::underflow_error",
-			"std::bad_alloc",
-			"std::bad_array_new_length",
-			"std::bad_optional_access",
-			"std::bad_typeid",
-			"std::bad_any_cast",
-			"std::bad_cast",
-			"std::bad_weak_ptr",
-			"std::bad_function_call",
-			"std::bad_exception",
-			"std::bad_variant_access",
-			"unspecified dynamic exception"
-		};
-
-		assert(ev < (sizeof(msg) / sizeof(const char*)));
-		return msg[ev];
-	}
-
-	class dynamic_exception_error_category : public std::error_category
-	{
-		public:
-
-		const char* name() const noexcept override
-		{ 
-			return "dynamic_exception"; 
-		}
-		
-		std::string message(int code) const override
-		{
-			return dynamic_exception_errc_str(code);
-		}
-
-		bool equivalent(int code, const std::error_condition& cond) const noexcept override
-		{
-			switch (static_cast<dynamic_exception_errc>(code))
-			{
-				case dynamic_exception_errc::domain_error: 
-					return (cond == std::errc::argument_out_of_domain);
-				case dynamic_exception_errc::invalid_argument:
-					return (cond == std::errc::invalid_argument);
-				case dynamic_exception_errc::length_error:
-					return (cond == std::errc::value_too_large);
-				case dynamic_exception_errc::out_of_range:
-				case dynamic_exception_errc::range_error:
-				case dynamic_exception_errc::underflow_error:
-					return (cond == std::errc::result_out_of_range);
-				case dynamic_exception_errc::overflow_error:
-					return (cond == std::errc::value_too_large);
-				case dynamic_exception_errc::bad_alloc:
-				case dynamic_exception_errc::bad_array_new_length:
-					return (cond == std::errc::not_enough_memory);
-				default:;
-			}
-			return false;
-		}
+		"Success",
+		"std::runtime_error",
+		"std::domain_error",
+		"std::invalid_argument",
+		"std::length_error",
+		"std::out_of_range",
+		"std::logic_error",
+		"std::range_error",
+		"std::overflow_error",
+		"std::underflow_error",
+		"std::bad_alloc",
+		"std::bad_array_new_length",
+		"std::bad_optional_access",
+		"std::bad_typeid",
+		"std::bad_any_cast",
+		"std::bad_cast",
+		"std::bad_weak_ptr",
+		"std::bad_function_call",
+		"std::bad_exception",
+		"std::bad_variant_access",
+		"unspecified dynamic exception"
 	};
 
-	const dynamic_exception_error_category dynamic_exception_error_category_instance;
+	assert(ev < (sizeof(msg) / sizeof(const char*)));
+	return msg[ev];
+}
 
-} // end anonymous namespace
-
-const std::error_category& dynamic_exception_category() noexcept
+class dynamic_exception_error_category : public std::error_category
 {
+	public:
+
+	const char* name() const noexcept override
+	{ 
+		return "dynamic_exception"; 
+	}
+	
+	std::string message(int code) const override
+	{
+		return dynamic_exception_errc_str(code);
+	}
+
+	bool equivalent(int code, const std::error_condition& cond) const noexcept override
+	{
+		switch (static_cast<dynamic_exception_errc>(code))
+		{
+			case dynamic_exception_errc::domain_error: 
+				return (cond == std::errc::argument_out_of_domain);
+			case dynamic_exception_errc::invalid_argument:
+				return (cond == std::errc::invalid_argument);
+			case dynamic_exception_errc::length_error:
+				return (cond == std::errc::value_too_large);
+			case dynamic_exception_errc::out_of_range:
+			case dynamic_exception_errc::range_error:
+			case dynamic_exception_errc::underflow_error:
+				return (cond == std::errc::result_out_of_range);
+			case dynamic_exception_errc::overflow_error:
+				return (cond == std::errc::value_too_large);
+			case dynamic_exception_errc::bad_alloc:
+			case dynamic_exception_errc::bad_array_new_length:
+				return (cond == std::errc::not_enough_memory);
+			default:;
+		}
+		return false;
+	}
+};
+
+inline const std::error_category& dynamic_exception_category() noexcept
+{
+	static const dynamic_exception_error_category dynamic_exception_error_category_instance;
 	return dynamic_exception_error_category_instance;
 }
 
-std::error_code error_code_from_exception(
-	std::exception_ptr eptr, 
-	std::error_code not_matched
-) noexcept
+} // end anonymous namespace
+
+inline std::error_code make_error_code(dynamic_exception_errc code) noexcept
+{
+	return std::error_code{static_cast<int>(code), dynamic_exception_category()};
+}
+
+inline std::error_code error_code_from_exception(std::exception_ptr eptr) noexcept
 {
 	if (!eptr) return make_error_code(dynamic_exception_errc::bad_exception);
 
@@ -3004,19 +2995,19 @@ std::error_code error_code_from_exception(
 	catch (...)
 	{ }
 
-	return not_matched;	
+	return make_error_code(dynamic_exception_errc::unspecified_exception);
 }
 
 // ---------- ErrorDomain (abstract base class)
 //
-void error_domain::throw_exception(const error& e) const
+inline void error_domain::throw_exception(const error& e) const
 {
 	throw thrown_dynamic_exception{e};	
 }
 
 // ---------- GenericErrorDomain
 //
-bool generic_error_domain::equivalent(const error& lhs, const error& rhs) const noexcept
+inline bool generic_error_domain::equivalent(const error& lhs, const error& rhs) const noexcept
 {
 	assert(lhs.domain() == *this);
 	if (lhs.domain() == rhs.domain())
@@ -3198,7 +3189,7 @@ namespace {
 
 } // end anonymous namespace
 
-string_ref generic_error_domain::message(const error& e) const noexcept
+inline string_ref generic_error_domain::message(const error& e) const noexcept
 {
 	assert(e.domain() == *this);
 	return generic_error_code_message(error_cast<std::errc>(e));
@@ -3206,7 +3197,7 @@ string_ref generic_error_domain::message(const error& e) const noexcept
 
 // ---------- ErrorCodeErrorDomain
 //
-string_ref error_code_error_domain::message(const error& e) const noexcept
+inline string_ref error_code_error_domain::message(const error& e) const noexcept
 {
 	assert(e.domain() == *this);
 
@@ -3220,7 +3211,7 @@ string_ref error_code_error_domain::message(const error& e) const noexcept
 	return string_ref{"Bad error code"};
 }
 
-void error_code_error_domain::throw_exception(const error& e) const
+inline void error_code_error_domain::throw_exception(const error& e) const
 {
 	assert(e.domain() == *this);
 
@@ -3230,7 +3221,7 @@ void error_code_error_domain::throw_exception(const error& e) const
 	throw std::system_error{code};
 }
 
-bool error_code_error_domain::equivalent(const error& lhs, const error& rhs) const noexcept
+inline bool error_code_error_domain::equivalent(const error& lhs, const error& rhs) const noexcept
 {
 	assert(lhs.domain() == *this);
 
@@ -3251,7 +3242,7 @@ bool error_code_error_domain::equivalent(const error& lhs, const error& rhs) con
 	return false;
 }
 
-stdx::error error_traits<std::error_code>::to_error(std::error_code ec) noexcept
+inline stdx::error error_traits<std::error_code>::to_error(std::error_code ec) noexcept
 {
 	using internal_value_type = error_code_error_domain::internal_value_type;
 
@@ -3271,7 +3262,7 @@ stdx::error error_traits<std::error_code>::to_error(std::error_code ec) noexcept
 
 // ---------- DynamicExceptionErrorDomain
 //
-string_ref dynamic_exception_error_domain::message(const error& e) const noexcept
+inline string_ref dynamic_exception_error_domain::message(const error& e) const noexcept
 {
 	assert(e.domain() == *this);
 
@@ -3318,7 +3309,7 @@ std::errc dynamic_exception_code_to_generic_code(dynamic_exception_errc code) no
 
 } // end anonymous namespace
 
-bool dynamic_exception_error_domain::equivalent(const error& lhs, const error& rhs) const noexcept
+inline bool dynamic_exception_error_domain::equivalent(const error& lhs, const error& rhs) const noexcept
 {
 	assert(lhs.domain() == *this);
 
@@ -3374,7 +3365,7 @@ bool dynamic_exception_error_domain::equivalent(const error& lhs, const error& r
 
 // ---------- DynamicExceptionCodeErrorDomain
 //
-bool dynamic_exception_code_error_domain::equivalent(
+inline bool dynamic_exception_code_error_domain::equivalent(
 	const error& lhs, 
 	const error& rhs
 ) const noexcept
@@ -3400,7 +3391,7 @@ bool dynamic_exception_code_error_domain::equivalent(
 	return false;
 }
 
-string_ref dynamic_exception_code_error_domain::message(const error& e) const noexcept
+inline string_ref dynamic_exception_code_error_domain::message(const error& e) const noexcept
 {
 	assert(e.domain() == *this);
 	return string_ref{
