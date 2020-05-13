@@ -185,6 +185,102 @@ std::error_code error_code_from_exception(
 	return not_matched;	
 }
 
+error error_from_exception(std::exception_ptr eptr) noexcept
+{
+	if (!eptr) return make_error(dynamic_exception_errc::bad_exception);
+
+	try 
+	{
+		std::rethrow_exception(eptr);
+	}
+	catch (const std::domain_error&)
+	{
+		return make_error(dynamic_exception_errc::domain_error);
+	}
+	catch (const std::invalid_argument&)
+	{
+		return make_error(dynamic_exception_errc::invalid_argument);
+	}
+	catch (const std::length_error&)
+	{
+		return make_error(dynamic_exception_errc::length_error);
+	}
+	catch (const std::out_of_range&)
+	{
+		return make_error(dynamic_exception_errc::out_of_range);
+	}
+	catch (const std::logic_error&)
+	{
+		return make_error(dynamic_exception_errc::logic_error);
+	}
+	catch (const std::range_error&)
+	{
+		return make_error(dynamic_exception_errc::range_error);
+	}
+	catch (const std::overflow_error&)
+	{
+		return make_error(dynamic_exception_errc::overflow_error);
+	}
+	catch (const std::underflow_error&)
+	{
+		return make_error(dynamic_exception_errc::underflow_error);
+	}
+	catch (const std::system_error& e)
+	{
+		return error{e.code()};
+	}
+	catch (const std::runtime_error&)
+	{
+		return make_error(dynamic_exception_errc::runtime_error);
+	}
+	catch (const std::bad_array_new_length&)
+	{
+		return make_error(dynamic_exception_errc::bad_array_new_length);
+	}
+	catch (const std::bad_alloc&)
+	{
+		return make_error(dynamic_exception_errc::bad_alloc);
+	}
+	catch (const std::bad_typeid&)
+	{
+		return make_error(dynamic_exception_errc::bad_typeid);
+	}
+	#if __cplusplus >= 201703L
+	catch (const std::bad_optional_access&)
+	{
+		return make_error(dynamic_exception_errc::bad_optional_access);
+	}
+	catch (const std::bad_any_cast&)
+	{
+		return make_error(dynamic_exception_errc::bad_any_cast);
+	}
+	catch (const std::bad_variant_access&)
+	{
+		return make_error(dynamic_exception_errc::bad_variant_access);
+	}
+	#endif
+	catch (const std::bad_cast&)
+	{
+		return make_error(dynamic_exception_errc::bad_cast);
+	}
+	catch (const std::bad_weak_ptr&)
+	{
+		return make_error(dynamic_exception_errc::bad_weak_ptr);
+	}
+	catch (const std::bad_function_call&)
+	{
+		return make_error(dynamic_exception_errc::bad_function_call);
+	}
+	catch (const std::bad_exception&)
+	{
+		return make_error(dynamic_exception_errc::bad_exception);
+	}
+	catch (...)
+	{ }
+
+	return make_error(dynamic_exception_errc::unspecified_exception);
+}
+
 // ---------- ErrorDomain (abstract base class)
 //
 void error_domain::throw_exception(const error& e) const
@@ -501,53 +597,24 @@ bool dynamic_exception_error_domain::equivalent(const error& lhs, const error& r
 	assert(lhs.domain() == *this);
 
 	std::exception_ptr eptr = error_cast<detail::exception_ptr_wrapper>(lhs).get();
-	std::error_code ec = error_code_from_exception(eptr);
-	if (ec == dynamic_exception_errc::unspecified_exception) return false;
 
 	if (rhs.domain() == *this)
 	{
 		std::exception_ptr eptr2 = error_cast<detail::exception_ptr_wrapper>(rhs).get();
 		if (eptr == eptr2) return true;
-		std::error_code ec2 = error_code_from_exception(eptr2);
-		return (ec == ec2.default_error_condition());
-	}
-	else if (rhs.domain() == dynamic_exception_code_domain)
-	{
-		if (ec.category() == dynamic_exception_category())
-		{
-			return dynamic_exception_code_domain.equivalent(
-				rhs, 
-				static_cast<dynamic_exception_errc>(ec.value())
-			);
-		}
-		else if (ec.category() == std::generic_category())
-		{
-			return dynamic_exception_code_domain.equivalent(
-				rhs,
-				static_cast<std::errc>(ec.value())
-			);
-		}
+
+		error e1 = error_from_exception(eptr);
+		error e2 = error_from_exception(eptr2);
+		return e1.domain().equivalent(e1, e2);
 	}
 	else if (rhs.domain() == error_code_domain)
 	{
+		std::error_code ec = error_code_from_exception(eptr);
 		return error_code_domain.equivalent(rhs, error{ec});
 	}
-	else if (rhs.domain() == generic_domain)
-	{
-		if (ec.category() == std::generic_category())
-		{
-			return generic_domain.equivalent(rhs, error{static_cast<std::errc>(ec.value())});
-		}
-		else if (ec.category() == dynamic_exception_category())
-		{
-			std::errc generic_code = dynamic_exception_code_to_generic_code(
-				static_cast<dynamic_exception_errc>(ec.value())
-			);
-			return generic_domain.equivalent(rhs, generic_code);
-		}
-	}
 
-	return false;
+	error e = error_from_exception(eptr);
+	return e.domain().equivalent(e, rhs);
 }
 
 // ---------- DynamicExceptionCodeErrorDomain
