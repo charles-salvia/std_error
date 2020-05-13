@@ -6,6 +6,8 @@ Requires at least C++14.  Tested on GCC-4.9.2 to GCC 10, Clang 4 to Clang 10, an
 All-in-one header-only link: https://github.com/charles-salvia/std_error/blob/master/all_in_one.hpp <br>
 Example usage/godbolt link: https://godbolt.org/z/8o1Yg6
 
+Full unit tests on godbolt: https://godbolt.org/z/TbuRHh
+
 **Example**
 ```c++
 // store an std::exception_ptr in an error
