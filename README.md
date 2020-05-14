@@ -4,9 +4,10 @@ Implementation of `std::error` as proposed by Herb Sutter in [Zero-Overhead Dete
 Requires at least C++14.  Tested on GCC-4.9.2 to GCC 10, Clang 4 to Clang 10, and MSVC 19.14 to 19.24
 
 All-in-one header-only link: https://github.com/charles-salvia/std_error/blob/master/all_in_one.hpp <br>
-Example usage/godbolt link: https://godbolt.org/z/8o1Yg6
+Example usage/godbolt link: https://godbolt.org/z/8o1Yg6<br>
+Full unit tests on godbolt: https://godbolt.org/z/TbuRHh<br>
 
-Full unit tests on godbolt: https://godbolt.org/z/TbuRHh
+Associated paper: https://charles-salvia.github.io/D2170R0.html
 
 **Example**
 ```c++
