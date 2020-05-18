@@ -7,7 +7,7 @@ All-in-one header-only link: https://github.com/charles-salvia/std_error/blob/ma
 Example usage/godbolt link: https://godbolt.org/z/8o1Yg6<br>
 Full unit tests on godbolt: https://godbolt.org/z/TbuRHh<br>
 
-Associated paper: https://charles-salvia.github.io/D2170R0.html
+Associated paper: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2170r0.html
 
 **Example**
 ```c++
