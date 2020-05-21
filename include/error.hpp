@@ -360,6 +360,14 @@ namespace detail {
 		>
 	{ };
 
+	template <class ErasedType>
+	struct error_type_is_erasable<ErasedType, void> : std::false_type
+	{ };
+
+	template <class ErasedType>
+	struct error_type_is_erasable<ErasedType, const void> : std::false_type
+	{ };
+
 	template <class T>
 	using can_use_static_cast = bool_constant<
 		std::is_integral<T>::value
