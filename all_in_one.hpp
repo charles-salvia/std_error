@@ -1628,6 +1628,7 @@ constexpr T* launder(T* p) noexcept
 #ifndef STDX_ERROR_HPP
 #define STDX_ERROR_HPP
 
+#include <exception>
 #include <stdexcept>
 #include <system_error>
 #include <memory>
