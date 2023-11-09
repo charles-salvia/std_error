@@ -1101,9 +1101,11 @@ namespace detail {
 
 } // end namespace detail
 
+#ifdef STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
 template <>
 struct is_trivially_relocatable<detail::exception_ptr_wrapper> : std::true_type
 { };
+#endif
 
 // Error domain mapping to std::exception_ptr
 //
