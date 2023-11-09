@@ -3,6 +3,7 @@
 #include <system_error>
 #include <iostream>
 #include <random>
+#include <type_traits>
 #include <cstdint>
 #include <string>
 
@@ -416,6 +417,9 @@ void error_test()
 {
 	static_assert(sizeof(stdx::error) == sizeof(void*) * 2, "FAILz");
 	static_assert(std::is_standard_layout<stdx::error>::value, "FAILz");
+#if defined(__cpp_lib_trivially_relocatable)
+	static_assert(std::is_trivially_relocatable<stdx::error>::value, "FAILz");
+#endif
 
 	// error constructed from std::errc
 	{
