@@ -57,5 +57,11 @@
 	#define STDX_MSVC_EMPTY_BASE_CLASSES
 #endif
 
+#if defined(__cpp_impl_trivially_relocatable)
+	#define STDX_TRIVIALLY_RELOCATABLE [[trivially_relocatable]]
+#else
+	#define STDX_TRIVIALLY_RELOCATABLE
+#endif
+
 #endif // STDX_COMPILER_HPP
 
