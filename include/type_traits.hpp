@@ -107,22 +107,25 @@ template <class T>
 using is_trivially_move_constructible = std::is_trivially_move_constructible<T>;
 #else
 template <class T>
-struct is_trivially_move_constructible : is_trivially_copyable<T>
-{ };
+using is_trivially_move_constructible = is_trivially_copyable<T>;
 #endif
 
+#if defined(__cpp_lib_trivially_relocatable)
+using std::is_trivially_relocatable;
+#elif defined(__has_builtin)
+	#if __has_builtin(__is_trivially_relocatable)
+	template <class T>
+	struct is_trivially_relocatable : std::bool_constant<__is_trivially_relocatable(T)> { };
+	#define STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
+	#else
+	template <class T>
+	struct is_trivially_relocatable : is_trivially_copyable<T> { };
+	#define STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
+	#endif
+#else
 template <class T>
-struct is_trivially_relocatable
-	:
-	bool_constant<
-		is_trivially_move_constructible<T>::value
-		&& std::is_trivially_destructible<T>::value
-	>
-{ };
-
-#if defined(STDX_VARIABLE_TEMPLATES)
-template <class T>
-inline constexpr bool is_trivially_relocatable_v = is_trivially_relocatable<T>::value;
+struct is_trivially_relocatable : is_trivially_copyable<T> { };
+#define STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
 #endif
 
 #if __cplusplus >= 201703L

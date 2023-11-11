@@ -418,7 +418,7 @@ template <
 	class Deleter,
 	class Pointer
 >
-class intrusive_ptr
+class STDX_TRIVIALLY_RELOCATABLE intrusive_ptr
 	: 
 	public detail::intrusive_ptr_base<
 		T, 
@@ -766,11 +766,13 @@ void swap(intrusive_ptr<T, G, D, P>& lhs, intrusive_ptr<T, G, D, P>& rhs) noexce
 	lhs.swap(rhs);
 }
 
+#ifdef STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
 // -------- specialization for is_trivially_relocatable
 //
 template <class Y, class G, class D, class P>
 struct is_trivially_relocatable<intrusive_ptr<Y,G,D,P>> : std::true_type
 { };
+#endif
 	
 } // end namespace stdx
 

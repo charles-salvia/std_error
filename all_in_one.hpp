@@ -174,22 +174,25 @@ template <class T>
 using is_trivially_move_constructible = std::is_trivially_move_constructible<T>;
 #else
 template <class T>
-struct is_trivially_move_constructible : is_trivially_copyable<T>
-{ };
+using is_trivially_move_constructible = is_trivially_copyable<T>;
 #endif
 
+#if defined(__cpp_lib_trivially_relocatable)
+using std::is_trivially_relocatable;
+#elif defined(__has_builtin)
+	#if __has_builtin(__is_trivially_relocatable)
+	template <class T>
+	struct is_trivially_relocatable : std::bool_constant<__is_trivially_relocatable(T)> { };
+	#define STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
+	#else
+	template <class T>
+	struct is_trivially_relocatable : is_trivially_copyable<T> { };
+	#define STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
+	#endif
+#else
 template <class T>
-struct is_trivially_relocatable
-	:
-	bool_constant<
-		is_trivially_move_constructible<T>::value
-		&& std::is_trivially_destructible<T>::value
-	>
-{ };
-
-#if defined(STDX_VARIABLE_TEMPLATES)
-template <class T>
-inline constexpr bool is_trivially_relocatable_v = is_trivially_relocatable<T>::value;
+struct is_trivially_relocatable : is_trivially_copyable<T> { };
+#define STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
 #endif
 
 #if __cplusplus >= 201703L
@@ -781,7 +784,7 @@ template <
 	class Deleter,
 	class Pointer
 >
-class intrusive_ptr
+class STDX_TRIVIALLY_RELOCATABLE intrusive_ptr
 	: 
 	public detail::intrusive_ptr_base<
 		T, 
@@ -1129,11 +1132,11 @@ void swap(intrusive_ptr<T, G, D, P>& lhs, intrusive_ptr<T, G, D, P>& rhs) noexce
 	lhs.swap(rhs);
 }
 
-// -------- specialization for is_trivially_relocatable
-//
+#ifdef STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
 template <class Y, class G, class D, class P>
 struct is_trivially_relocatable<intrusive_ptr<Y,G,D,P>> : std::true_type
 { };
+#endif
 	
 } // end namespace stdx
 
@@ -1628,6 +1631,7 @@ constexpr T* launder(T* p) noexcept
 #ifndef STDX_ERROR_HPP
 #define STDX_ERROR_HPP
 
+#include <exception>
 #include <stdexcept>
 #include <system_error>
 #include <memory>
@@ -2712,9 +2716,11 @@ namespace detail {
 
 } // end namespace detail
 
+#ifdef STDX_MUST_SPECIALIZE_IS_TRIVIALLY_RELOCATABLE
 template <>
 struct is_trivially_relocatable<detail::exception_ptr_wrapper> : std::true_type
 { };
+#endif
 
 // Error domain mapping to std::exception_ptr
 //
